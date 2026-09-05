@@ -19,18 +19,20 @@ public class RateLimiterServer {
     public void start() throws IOException {
         int porta = 8080;
         ServerSocket serverSocket = new ServerSocket(porta);
-        while (true){
-           Socket socket = serverSocket.accept();
+        while (true) {
+            Socket socket = serverSocket.accept();
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
-            String key = reader.readLine();
-            boolean allow = rateLimiter.allowRequest(key);
+            String key;
+            while ((key = reader.readLine()) != null) {
+                boolean allow = rateLimiter.allowRequest(key);
 
-            if (allow) {
-                writer.println("ALLOWED");
-            } else {
-                writer.println("BLOCKED");
+                if (allow) {
+                    writer.println("ALLOWED");
+                } else {
+                    writer.println("BLOCKED");
+                }
             }
         }
     }
