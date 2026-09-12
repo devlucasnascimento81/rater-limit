@@ -21,19 +21,26 @@ public class RateLimiterServer {
         ServerSocket serverSocket = new ServerSocket(porta);
         while (true) {
             Socket socket = serverSocket.accept();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+            new Thread(() -> {
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
-            String key;
-            while ((key = reader.readLine()) != null) {
-                boolean allow = rateLimiter.allowRequest(key);
+                    String key;
+                    while ((key = reader.readLine()) != null) {
+                        boolean allow = rateLimiter.allowRequest(key);
 
-                if (allow) {
-                    writer.println("ALLOWED");
-                } else {
-                    writer.println("BLOCKED");
+                        if (allow) {
+                            writer.println("ALLOWED");
+                        } else {
+                            writer.println("BLOCKED");
+                        }
+                    }
+                } catch (IOException e){
+                    System.out.println("Erro na conexão: " + e.getMessage());
                 }
-            }
+            }).start();
+
         }
     }
 }

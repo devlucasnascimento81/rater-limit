@@ -2,17 +2,18 @@ package com.devlucasnascimento.ratelimiter.service;
 
 import com.devlucasnascimento.ratelimiter.model.Bucket;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class RateLimiter {
-    private final HashMap<String, Bucket> bucketHashMap;
+public class
+RateLimiter {
+    private final ConcurrentHashMap<String, Bucket> bucketHashMap;
     private final int initialTokens;
     private final int maxCapacity;
 
     public RateLimiter(int initialTokens, int maxCapacity) {
         this.initialTokens = initialTokens;
         this.maxCapacity = maxCapacity;
-        this.bucketHashMap = new HashMap<>();
+        this.bucketHashMap = new ConcurrentHashMap<>();
     }
 
     public boolean allowRequest(String key){
@@ -20,4 +21,5 @@ public class RateLimiter {
         bucket.refill();
         return bucket.consumeToken();
     }
+
 }
