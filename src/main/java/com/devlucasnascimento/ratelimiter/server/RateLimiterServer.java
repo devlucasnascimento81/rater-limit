@@ -17,15 +17,16 @@ public class RateLimiterServer {
     }
 
     public void start() throws IOException {
-        int porta = 8080;
-        ServerSocket serverSocket = new ServerSocket(porta);
+        int port = 8080;
+        ServerSocket serverSocket = new ServerSocket(port);
         while (true) {
             Socket socket = serverSocket.accept();
             new Thread(() -> {
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-
+                try (
+                        socket;
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+                ) {
                     String key;
                     while ((key = reader.readLine()) != null) {
                         boolean allow = rateLimiter.allowRequest(key);
@@ -36,7 +37,7 @@ public class RateLimiterServer {
                             writer.println("BLOCKED");
                         }
                     }
-                } catch (IOException e){
+                } catch (IOException e) {
                     System.out.println("Erro na conexão: " + e.getMessage());
                 }
             }).start();

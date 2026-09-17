@@ -14,7 +14,7 @@ public class RateLimiterTest {
         assertTrue(rateLimiter.allowRequest("Cliente1"));
     }
     @Test
-    public  void fourthRequest(){
+    public  void requestBeyondCapacityIsBlocked(){
         RateLimiter rateLimiter1 = new RateLimiter(3,3);
 
         rateLimiter1.allowRequest("cliente2");
